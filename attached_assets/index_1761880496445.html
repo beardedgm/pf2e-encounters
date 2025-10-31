@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pathfinder 2e Encounter Builder</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'pf-red': '#8B0000',
+                        'pf-gold': '#FFD700',
+                        'pf-dark': '#2D1B69'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="styles.css?v=5">
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-pf-dark mb-2">Pathfinder 2e Encounter Builder</h1>
+            <p class="text-gray-600">Create balanced encounters with real-time statistics and threat calculations</p>
+        </header>
+
+        <!-- Main Content -->
+        <div class="grid lg:grid-cols-3 gap-8">
+            <!-- Left Panel - Configuration -->
+            <div class="lg:col-span-1 space-y-6">
+                <!-- Party Configuration -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-pf-dark">Party Configuration</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Party Size</label>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Members:</span>
+                                <div class="flex items-center space-x-2">
+                                    <button id="partySizeDecrease" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-md text-lg font-bold flex items-center justify-center">-</button>
+                                    <input type="number" id="partySize" class="w-16 px-2 py-1 text-center border border-gray-300 rounded-md" min="1" max="8" value="4">
+                                    <button id="partySizeIncrease" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-md text-lg font-bold flex items-center justify-center">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Party Level</label>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-600">Level:</span>
+                                <div class="flex items-center space-x-2">
+                                    <button id="partyLevelDecrease" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-md text-lg font-bold flex items-center justify-center">-</button>
+                                    <input type="number" id="partyLevel" class="w-16 px-2 py-1 text-center border border-gray-300 rounded-md" min="-1" max="20" value="1">
+                                    <button id="partyLevelIncrease" class="w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-md text-lg font-bold flex items-center justify-center">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label for="threatLevel" class="block text-sm font-medium text-gray-700 mb-2">Threat Level</label>
+                            <select id="threatLevel" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-pf-dark focus:border-transparent">
+                                <option value="trivial">Trivial</option>
+                                <option value="low">Low</option>
+                                <option value="moderate" selected>Moderate</option>
+                                <option value="severe">Severe</option>
+                                <option value="extreme">Extreme</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Stats Chart</label>
+                            <div class="flex space-x-2">
+                                <button id="statsStandards" class="flex-1 px-3 py-2 text-sm bg-pf-dark text-white rounded-md hover:bg-opacity-80 transition-colors">Standards</button>
+                                <button id="statsPublished" class="flex-1 px-3 py-2 text-sm bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors">Published</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Monster Composition -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-pf-dark">Monster Composition</h2>
+                    
+                    <div class="space-y-4">
+                        <div class="monster-role" data-role="minion">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-sm font-medium text-gray-700">🗡️ Minions</label>
+                                <div class="flex items-center space-x-2">
+                                    <button class="role-decrease w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-md text-lg font-bold flex items-center justify-center" data-role="minion">-</button>
+                                    <input type="number" class="role-input w-16 px-2 py-1 text-center border border-gray-300 rounded-md" min="0" max="12" value="0" data-role="minion">
+                                    <button class="role-increase w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-md text-lg font-bold flex items-center justify-center" data-role="minion">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="monster-role" data-role="lieutenant">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-sm font-medium text-gray-700">⚔️ Lieutenants</label>
+                                <div class="flex items-center space-x-2">
+                                    <button class="role-decrease w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-md text-lg font-bold flex items-center justify-center" data-role="lieutenant">-</button>
+                                    <input type="number" class="role-input w-16 px-2 py-1 text-center border border-gray-300 rounded-md" min="0" max="6" value="0" data-role="lieutenant">
+                                    <button class="role-increase w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-md text-lg font-bold flex items-center justify-center" data-role="lieutenant">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="monster-role" data-role="boss">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-sm font-medium text-gray-700">👑 Boss</label>
+                                <div class="flex items-center space-x-2">
+                                    <button class="role-decrease w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-md text-lg font-bold flex items-center justify-center" data-role="boss">-</button>
+                                    <input type="number" class="role-input w-16 px-2 py-1 text-center border border-gray-300 rounded-md" min="0" max="3" value="0" data-role="boss">
+                                    <button class="role-increase w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-md text-lg font-bold flex items-center justify-center" data-role="boss">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="monster-role" data-role="eliteBoss">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-sm font-medium text-gray-700">🏆 Elite Boss</label>
+                                <div class="flex items-center space-x-2">
+                                    <button class="role-decrease w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-md text-lg font-bold flex items-center justify-center" data-role="eliteBoss">-</button>
+                                    <input type="number" class="role-input w-16 px-2 py-1 text-center border border-gray-300 rounded-md" min="0" max="2" value="0" data-role="eliteBoss">
+                                    <button class="role-increase w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-md text-lg font-bold flex items-center justify-center" data-role="eliteBoss">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="monster-role" data-role="apexBoss">
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="text-sm font-medium text-gray-700">💀 Apex Boss</label>
+                                <div class="flex items-center space-x-2">
+                                    <button class="role-decrease w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-md text-lg font-bold flex items-center justify-center" data-role="apexBoss">-</button>
+                                    <input type="number" class="role-input w-16 px-2 py-1 text-center border border-gray-300 rounded-md" min="0" max="1" value="0" data-role="apexBoss">
+                                    <button class="role-increase w-8 h-8 bg-gray-200 hover:bg-gray-300 rounded-md text-lg font-bold flex items-center justify-center" data-role="apexBoss">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-gray-200">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-medium text-gray-700">Total XP:</span>
+                            <span id="totalXP" class="text-lg font-bold text-pf-dark">0</span>
+                        </div>
+                        <div class="flex justify-between items-center mt-1">
+                            <span class="text-sm font-medium text-gray-700">Target XP:</span>
+                            <span id="targetXP" class="text-lg font-bold text-pf-gold">80</span>
+                        </div>
+                        <div id="threatStatus" class="mt-2 p-2 rounded-md text-center text-sm font-medium bg-yellow-100 text-yellow-800">
+                            Balanced Encounter
+                        </div>
+                    </div>
+
+                    <div class="mt-4 space-y-2">
+                        <button id="clearComposition" class="w-full px-4 py-2 text-sm bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors">Clear All</button>
+                        <button id="saveEncounter" class="w-full px-4 py-2 text-sm bg-pf-dark text-white rounded-md hover:bg-opacity-80 transition-colors">Save Encounter</button>
+                    </div>
+                </div>
+
+                <!-- Quick Templates -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-pf-dark">Quick Templates</h2>
+                    <div id="templateList" class="space-y-2">
+                        <!-- Templates will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Statistics and Export -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Monster Statistics -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-semibold text-pf-dark">Monster Statistics</h2>
+                        <button id="exportStatsImage" class="px-3 py-1 text-sm bg-purple-600 text-white rounded-md hover:bg-purple-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed" disabled>Export as Image</button>
+                    </div>
+                    <div id="monsterStats" class="grid gap-4">
+                        <div class="text-center text-gray-500 py-8">
+                            Add monsters to see their statistics
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Saved Encounters -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-semibold text-pf-dark">Saved Encounters</h2>
+                        <button id="clearSaved" class="px-3 py-1 text-sm bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors">Clear All</button>
+                    </div>
+                    <div id="savedEncounters" class="space-y-2">
+                        <div class="text-center text-gray-500 py-4">
+                            No saved encounters
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Export Section -->
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-pf-dark">Export Encounter</h2>
+                    <div class="flex space-x-2">
+                        <button id="exportText" class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors">Export as Text</button>
+                        <button id="exportJSON" class="flex-1 px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">Export as JSON</button>
+                    </div>
+                    <textarea id="exportOutput" class="w-full mt-4 p-3 border border-gray-300 rounded-md h-32 resize-none" placeholder="Exported encounter data will appear here..." readonly></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load html2canvas for image export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    
+    <!-- Load JavaScript modules in order -->
+    <script src="js/data.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/encounter.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
